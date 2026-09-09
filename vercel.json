@@ -1,0 +1,13 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/birthday2026",
+      "destination": "/birthday2026/index.html"
+    },
+    {
+      "source": "/birthday2026/(.*)",
+      "destination": "/birthday2026/index.html"
+    }
+  ]
+}

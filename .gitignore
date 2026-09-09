@@ -1,0 +1,10 @@
+# Dependencies & deployment artifacts
+node_modules/
+.vercel/
+*.log
+
+# Other subprojects in public
+landing-pages/
+reset-logos/
+reset-mockups/
+rio-assets/
