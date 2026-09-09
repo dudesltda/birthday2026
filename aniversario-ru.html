@@ -1561,7 +1561,7 @@
           <video id="birthdayVideo" controls playsinline preload="metadata"></video>
 
           <!-- Iframe for YouTube or external streams -->
-          <iframe id="videoIframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <iframe id="videoIframe" src="https://www.youtube.com/embed/CZqSDfh10FI?enablejsapi=1&rel=0" title="Homenagem em Vídeo para a Ru" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
           <!-- Animated Canvas background visualizer (demonstration / ambience) -->
           <canvas id="celebrationCanvas"></canvas>
@@ -1577,7 +1577,7 @@
             </div>
             <h3 class="video-overlay-title">Homenagem em Vídeo para a Ru</h3>
             <p class="video-overlay-subtitle">
-              Clique para reproduzir a homenagem especial em vídeo para comemorar esta data.
+              Dê o play para assistir ao vídeo especial preparado com todo o amor para comemorar esta data.
             </p>
           </div>
 
@@ -1587,17 +1587,17 @@
         <div class="video-footer-bar">
           <div class="video-status-text">
             <span class="video-status-dot"></span>
-            <span id="videoStatusMsg">Espaço reservado para o vídeo especial da Ru</span>
+            <span id="videoStatusMsg">Vídeo oficial conectado • Pronto para assistir</span>
           </div>
 
           <div class="video-tools">
             <!-- Insert YouTube / Web Link -->
-            <button class="btn-video-tool" onclick="openLinkModal()" title="Colar link do YouTube ou da web">
+            <button class="btn-video-tool" onclick="openLinkModal()" title="Colar outro link do YouTube se desejar">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
               </svg>
-              <span>Inserir Link de Vídeo</span>
+              <span>Alterar Vídeo</span>
             </button>
           </div>
         </div>
@@ -1909,23 +1909,15 @@
     const celebrationCanvas = document.getElementById('celebrationCanvas');
     const videoStatusMsg = document.getElementById('videoStatusMsg');
 
-    let hasCustomVideo = false;
+    let hasCustomVideo = true;
 
     function handleVideoPlayClick() {
-      if (hasCustomVideo && birthdayVideo.src) {
-        videoOverlay.classList.add('hidden');
-        celebrationCanvas.style.display = 'none';
-        birthdayVideo.style.display = 'block';
-        birthdayVideo.play();
-      } else if (hasCustomVideo && videoIframe.src) {
-        videoOverlay.classList.add('hidden');
-        celebrationCanvas.style.display = 'none';
-        videoIframe.style.display = 'block';
-      } else {
-        videoOverlay.classList.add('hidden');
-        videoStatusMsg.textContent = 'Espaço preparado com carinho para o vídeo especial da Ru.';
-        startCelebrationCanvasDemo();
-      }
+      videoOverlay.classList.add('hidden');
+      celebrationCanvas.style.display = 'none';
+      videoIframe.style.display = 'block';
+      videoIframe.src = "https://www.youtube.com/embed/CZqSDfh10FI?autoplay=1&rel=0";
+      videoStatusMsg.textContent = 'Reproduzindo homenagem em vídeo da Ru ❤️';
+      showToast('Reproduzindo homenagem em vídeo ✨');
     }
 
     function openLinkModal() {
