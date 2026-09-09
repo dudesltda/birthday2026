@@ -81,7 +81,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Ambient Background Texture & Gradients */
+    /* Ambient Background Texture & Gradients - Hardware-Accelerated */
     .ambient-bg {
       position: fixed;
       top: 0;
@@ -91,46 +91,15 @@
       pointer-events: none;
       z-index: 0;
       overflow: hidden;
+      background: 
+        radial-gradient(circle at 90% 12%, rgba(232, 202, 199, 0.48) 0%, transparent 55%),
+        radial-gradient(circle at 10% 85%, rgba(245, 223, 220, 0.52) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(212, 175, 135, 0.20) 0%, transparent 45%);
+      transform: translateZ(0);
     }
 
     .ambient-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(100px);
-      opacity: 0.55;
-      animation: floatOrb 22s ease-in-out infinite alternate;
-    }
-
-    .orb-1 {
-      top: -10%;
-      right: -5%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(232, 202, 199, 0.65) 0%, rgba(249, 239, 239, 0) 70%);
-    }
-
-    .orb-2 {
-      bottom: 20%;
-      left: -10%;
-      width: 550px;
-      height: 550px;
-      background: radial-gradient(circle, rgba(245, 223, 220, 0.6) 0%, rgba(250, 246, 245, 0) 70%);
-      animation-delay: -7s;
-    }
-
-    .orb-3 {
-      top: 45%;
-      right: 15%;
-      width: 450px;
-      height: 450px;
-      background: radial-gradient(circle, rgba(212, 175, 135, 0.25) 0%, rgba(250, 246, 245, 0) 70%);
-      animation-delay: -14s;
-    }
-
-    @keyframes floatOrb {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(40px, -30px) scale(1.08); }
-      100% { transform: translate(-30px, 40px) scale(0.95); }
+      display: none; /* Disabled 100px blurs to ensure 60-120fps on mobile devices */
     }
 
     /* Noise Texture Overlay for Editorial Grain */
@@ -140,10 +109,16 @@
       left: 0;
       width: 100%;
       height: 100%;
-      opacity: 0.025;
+      opacity: 0.02;
       pointer-events: none;
       z-index: 1;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    @media (max-width: 868px) {
+      .grain-overlay {
+        display: none !important; /* Massive scroll performance boost on mobile */
+      }
     }
 
     /* Layout Wrapper */
@@ -391,6 +366,12 @@
       border-radius: calc(var(--radius-lg) - 6px);
       background: var(--bg-rose-soft);
       aspect-ratio: 1 / 1;
+    }
+
+    .portrait-inner-frame picture {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
 
     .portrait-inner-frame img {
@@ -708,14 +689,6 @@
       display: none;
     }
 
-    #celebrationCanvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
 
     .video-poster-overlay {
       position: absolute;
@@ -904,6 +877,12 @@
       box-shadow: var(--shadow-soft);
       border: 1px solid var(--border-subtle);
       aspect-ratio: 16 / 9;
+    }
+
+    .family-media-frame picture {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
 
     .family-media-frame img {
@@ -1384,8 +1363,24 @@
       opacity: 1;
     }
 
+    /* Hardware & Scroll Performance Optimizations */
+    .family-section, .pillars-section, .cta-banner {
+      content-visibility: auto;
+      contain-intrinsic-size: 0 500px;
+    }
+
+    .carousel-viewport {
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
+    }
+
     /* Responsive adjustments */
     @media (max-width: 868px) {
+      .navbar {
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
       .family-grid {
         grid-template-columns: 1fr;
         gap: 32px;
@@ -1405,12 +1400,8 @@
 </head>
 <body>
 
-  <!-- Ambient Animated Glowing Orbs -->
-  <div class="ambient-bg" aria-hidden="true">
-    <div class="ambient-orb orb-1"></div>
-    <div class="ambient-orb orb-2"></div>
-    <div class="ambient-orb orb-3"></div>
-  </div>
+  <!-- Ambient Background (Hardware-Accelerated Radial Gradient) -->
+  <div class="ambient-bg" aria-hidden="true"></div>
 
   <!-- Delicate Grain Texture -->
   <div class="grain-overlay" aria-hidden="true"></div>
@@ -1474,7 +1465,10 @@
       <div class="portrait-showcase">
         <div class="portrait-frame">
           <div class="portrait-inner-frame">
-            <img src="assets/images/ru-portrait.jpg" alt="Retrato artístico em aquarela da Ru sorridente" id="portraitImg">
+            <picture>
+              <source srcset="assets/images/ru-portrait.webp" type="image/webp">
+              <img src="assets/images/ru-portrait.jpg" alt="Retrato artístico em aquarela da Ru sorridente" id="portraitImg" width="440" height="440" decoding="async" fetchpriority="high">
+            </picture>
           </div>
           <div class="portrait-caption">
             <span class="portrait-tag">Ru, radiante e inspiradora</span>
@@ -1563,8 +1557,6 @@
           <!-- Iframe for YouTube or external streams -->
           <iframe id="videoIframe" src="https://www.youtube.com/embed/CZqSDfh10FI?enablejsapi=1&rel=0" title="Homenagem em Vídeo para a Ru" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-          <!-- Animated Canvas background visualizer (demonstration / ambience) -->
-          <canvas id="celebrationCanvas"></canvas>
 
           <!-- Interactive Play Poster Overlay -->
           <div class="video-poster-overlay" id="videoOverlay" onclick="handleVideoPlayClick()">
@@ -1608,7 +1600,10 @@
     <section id="familia" class="family-section">
       <div class="family-grid">
         <div class="family-media-frame">
-          <img src="assets/images/family-portrait.jpg" alt="Aquarela da família unida abraçando o Cordeiro coroado">
+          <picture>
+            <source srcset="assets/images/family-portrait.webp" type="image/webp">
+            <img src="assets/images/family-portrait.jpg" alt="Aquarela da família unida abraçando o Cordeiro coroado" loading="lazy" decoding="async" width="520" height="292">
+          </picture>
           <div class="family-badge">Família & Proteção Divina</div>
         </div>
 
@@ -1906,14 +1901,12 @@
     const birthdayVideo = document.getElementById('birthdayVideo');
     const videoIframe = document.getElementById('videoIframe');
     const videoOverlay = document.getElementById('videoOverlay');
-    const celebrationCanvas = document.getElementById('celebrationCanvas');
     const videoStatusMsg = document.getElementById('videoStatusMsg');
 
     let hasCustomVideo = true;
 
     function handleVideoPlayClick() {
       videoOverlay.classList.add('hidden');
-      celebrationCanvas.style.display = 'none';
       videoIframe.style.display = 'block';
       videoIframe.src = "https://www.youtube.com/embed/CZqSDfh10FI?autoplay=1&rel=0";
       videoStatusMsg.textContent = 'Reproduzindo homenagem em vídeo da Ru ❤️';
@@ -1967,78 +1960,12 @@
         videoIframe.style.display = 'block';
       }
 
-      celebrationCanvas.style.display = 'none';
       videoOverlay.classList.add('hidden');
       hasCustomVideo = true;
       videoStatusMsg.textContent = 'Vídeo personalizado conectado e pronto';
       closeLinkModal();
       showToast('Vídeo incorporado com sucesso! ✨');
     }
-
-    /* Animated Canvas Demonstration within Video Card */
-    let canvasDemoRunning = false;
-    function startCelebrationCanvasDemo() {
-      if (canvasDemoRunning) return;
-      canvasDemoRunning = true;
-      const ctx = celebrationCanvas.getContext('2d');
-
-      function resizeCanvas() {
-        celebrationCanvas.width = celebrationCanvas.offsetWidth;
-        celebrationCanvas.height = celebrationCanvas.offsetHeight;
-      }
-      resizeCanvas();
-      window.addEventListener('resize', resizeCanvas);
-
-      const sparkles = [];
-      for (let i = 0; i < 45; i++) {
-        sparkles.push({
-          x: Math.random() * celebrationCanvas.width,
-          y: Math.random() * celebrationCanvas.height,
-          radius: Math.random() * 2.5 + 1,
-          alpha: Math.random(),
-          speed: Math.random() * 0.02 + 0.01,
-          color: Math.random() > 0.5 ? '#ECC8AF' : '#F5DFDC'
-        });
-      }
-
-      function draw() {
-        ctx.fillStyle = '#1D1414';
-        ctx.fillRect(0, 0, celebrationCanvas.width, celebrationCanvas.height);
-
-        const grad = ctx.createRadialGradient(
-          celebrationCanvas.width / 2, celebrationCanvas.height / 2, 20,
-          celebrationCanvas.width / 2, celebrationCanvas.height / 2, celebrationCanvas.width / 1.8
-        );
-        grad.addColorStop(0, 'rgba(194, 125, 119, 0.35)');
-        grad.addColorStop(1, 'rgba(29, 20, 20, 0.95)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, celebrationCanvas.width, celebrationCanvas.height);
-
-        sparkles.forEach(s => {
-          s.alpha += s.speed;
-          const a = (Math.sin(s.alpha) + 1) / 2;
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-          ctx.fillStyle = s.color;
-          ctx.globalAlpha = a * 0.8;
-          ctx.fill();
-        });
-        ctx.globalAlpha = 1.0;
-
-        ctx.font = "italic 32px 'Cormorant Garamond', Georgia, serif";
-        ctx.fillStyle = "#FDF8F7";
-        ctx.textAlign = "center";
-        ctx.fillText("Parabéns, Ru! ❤️", celebrationCanvas.width / 2, celebrationCanvas.height / 2 - 10);
-
-        ctx.font = "400 14px 'Plus Jakarta Sans', sans-serif";
-        ctx.fillStyle = "#DFA49F";
-        ctx.fillText("Espaço reservado com carinho para o vídeo especial da Ru", celebrationCanvas.width / 2, celebrationCanvas.height / 2 + 25);
-
-        requestAnimationFrame(draw);
-      }
-      draw();
-    }
-    startCelebrationCanvasDemo();
 
     /* ==========================================================================
        CARROSSEL "A GRANDEZA DE SER RU" - CONTROLLER
@@ -2086,7 +2013,7 @@
         const gap = 24;
         const offset = currentIndex * (slideWidth + gap);
 
-        track.style.transform = `translateX(-${offset}px)`;
+        track.style.transform = `translate3d(-${offset}px, 0, 0)`;
 
         dots.forEach((dot, idx) => {
           if (idx === currentIndex) {
@@ -2154,6 +2081,7 @@
 
       viewport.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
+        touchEndX = touchStartX;
         isTouching = true;
         stopAutoPlay();
       }, { passive: true });
@@ -2336,7 +2264,9 @@
     }
 
     function triggerCelebrationCannon() {
-      for (let i = 0; i < 90; i++) {
+      const isMobile = window.innerWidth <= 768;
+      const count = isMobile ? 30 : 70;
+      for (let i = 0; i < count; i++) {
         fxParticles.push(new PetalParticle(
           Math.random() * fxCanvas.width,
           Math.random() * (fxCanvas.height * 0.4),
@@ -2353,7 +2283,9 @@
     function triggerBurst() {
       const centerX = window.innerWidth / 2;
       const centerY = window.innerHeight * 0.45;
-      for (let i = 0; i < 70; i++) {
+      const isMobile = window.innerWidth <= 768;
+      const count = isMobile ? 24 : 55;
+      for (let i = 0; i < count; i++) {
         fxParticles.push(new PetalParticle(centerX, centerY, true));
       }
       showToast('Com todo o amor do mundo! ❤️');
@@ -2364,18 +2296,6 @@
     }
 
     document.getElementById('celebrateNavBtn').addEventListener('click', triggerCelebrationCannon);
-
-    setInterval(() => {
-      if (document.visibilityState === 'visible' && fxParticles.length < 25) {
-        for (let i = 0; i < 8; i++) {
-          fxParticles.push(new PetalParticle());
-        }
-        if (!isFxActive) {
-          isFxActive = true;
-          animateFx();
-        }
-      }
-    }, 12000);
 
     /* ==========================================================================
        SYNTHESIZED AMBIENT MUSIC (WEB AUDIO API - RELAXING CHORDS)
@@ -2451,15 +2371,17 @@
     document.getElementById('audioToggleBtn').addEventListener('click', toggleAudioAmbience);
 
     window.addEventListener('load', () => {
+      const isMobile = window.innerWidth <= 768;
       setTimeout(() => {
-        for (let i = 0; i < 24; i++) {
+        const count = isMobile ? 10 : 20;
+        for (let i = 0; i < count; i++) {
           fxParticles.push(new PetalParticle());
         }
         if (!isFxActive) {
           isFxActive = true;
           animateFx();
         }
-      }, 1000);
+      }, 800);
     });
   </script>
 </body>
